@@ -4,6 +4,7 @@ import {
   createNote,
   getNotes,
   getNoteById,
+  deleteNote,
 } from "../controllers/notes.controller.js";
 
 const router = express.Router();
@@ -19,5 +20,7 @@ router.get("/:id", getNoteById);
 
 // POST /notes
 router.post("/", createNote);
+
+router.delete("/:id", authMiddleware, deleteNote);
 
 export default router;
