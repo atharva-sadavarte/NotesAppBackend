@@ -95,3 +95,43 @@ export const deleteNote = async (req, res) => {
     return res.status(500).json({ message: "Failed to delete note" });
   }
 };
+
+export const updateNote = async (req, res) => {
+  const userId = req.user.id;
+  const noteId = req.params.id;
+  const { title, content } = req.body;
+
+  // Basic validation
+  if (!title?.trim()) {
+    return res.status(400).json({ message: "Title is required" });
+  }
+
+  try {
+    const [result] = await pool.execute(
+      `
+      UPDATE notes 
+      SET title = ?, content = ?
+      WHERE id = ? AND user_id = ?
+      `,
+      [title, content, noteId, userId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Note not found or unauthorized" });
+    }
+
+    // 🔥 Fetch updated note
+    const [rows] = await pool.execute(
+      "SELECT id, title, content, created_at FROM notes WHERE id = ?",
+      [noteId]
+    );
+
+    return res.json({
+      message: "Note updated successfully",
+      note: rows[0],
+    });
+  } catch (err) {
+    console.error("UPDATE NOTE ERROR:", err);
+    return res.status(500).json({ message: "Failed to update note" });
+  }
+};

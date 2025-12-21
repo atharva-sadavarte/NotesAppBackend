@@ -5,6 +5,7 @@ import {
   getNotes,
   getNoteById,
   deleteNote,
+  updateNote,
 } from "../controllers/notes.controller.js";
 
 const router = express.Router();
@@ -20,6 +21,7 @@ router.get("/:id", getNoteById);
 
 // POST /notes
 router.post("/", createNote);
+router.put("/:id", updateNote);   // ✅ UPDATE
 
 router.delete("/:id", authMiddleware, deleteNote);
 
